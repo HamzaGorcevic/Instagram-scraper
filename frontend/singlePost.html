@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            #container {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                background-color: cyan;
+            }
+            video,
+            img {
+                max-width: 300px;
+                height: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+
+        <script>
+            const searchParams = new URLSearchParams(window.location.search);
+            const param = searchParams.get("id");
+            console.log("param", param);
+
+            async function fetchSingleMedia() {
+                await fetch(`http://127.0.0.1:8000/api/media/${param}`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                        console.log("data", data);
+                        displayData(data);
+                    });
+            }
+
+            function isImage(url) {
+                return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+            }
+            function displayData(data) {
+                console.log(data);
+                let container = document.getElementById("container");
+                container.innerHTML = "";
+                for (let i in data.media) {
+                    let mediaElement = "";
+                    mediaElement = document.createElement("img");
+
+                    mediaElement.src = `http://127.0.0.1:8000/proxy/instagram?url=${encodeURIComponent(
+                        data.media[i]
+                    )}`;
+
+                    container.appendChild(mediaElement);
+                }
+
+                let videoElement = document.createElement("video");
+                videoElement.src = `http://127.0.0.1:8000/proxy/instagram?url=${encodeURIComponent(
+                    data.video_url
+                )}`;
+                let description = document.createElement("p");
+                description.innerText = data.description;
+                container.appendChild(description);
+                container.appendChild(videoElement);
+            }
+            fetchSingleMedia();
+        </script>
+    </body>
+</html>

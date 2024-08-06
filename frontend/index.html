@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Media Display</title>
+        <style>
+            .media-container {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .media-item {
+                margin: 10px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                background-color: pink;
+                width: 320px; /* Ensure items have enough width */
+            }
+            .media-item img,
+            .media-item video {
+                max-width: 300px;
+                height: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Media Display</h1>
+        <div id="media-container" class="media-container"></div>
+
+        <script>
+            async function fetchMediaData() {
+                try {
+                    const response = await fetch(
+                        "http://127.0.0.1:8000/api/media"
+                    );
+                    if (!response.ok) {
+                        throw new Error(
+                            "Network response was not ok " + response.statusText
+                        );
+                    }
+                    const data = await response.json();
+                    displayMedia(data);
+                } catch (error) {
+                    console.error(
+                        "There has been a problem with your fetch operation:",
+                        error
+                    );
+                }
+            }
+
+            function displayMedia(mediaData) {
+                const container = document.getElementById("media-container");
+                container.innerHTML = ""; // Clear previous content
+
+                mediaData.forEach((item) => {
+                    const mediaElement = document.createElement("div");
+                    mediaElement.classList.add("media-item");
+
+                    const thumbnailElement = document.createElement("img");
+                    thumbnailElement.src = `http://127.0.0.1:8000/proxy/instagram?url=${encodeURIComponent(
+                        item.thumbnail
+                    )}`;
+                    thumbnailElement.alt = "image";
+                    // Log the thumbnail URL to verify it's correct
+                    console.log("Thumbnail URL:", item.thumbnail);
+
+                    thumbnailElement.onerror = () => {
+                        console.error("Error loading image:", item.thumbnail);
+                    };
+
+                    mediaElement.appendChild(thumbnailElement);
+
+                    let desc = document.createElement("p");
+                    desc.innerText = item.description;
+                    mediaElement.appendChild(desc);
+
+                    mediaElement.addEventListener("click", () => {
+                        window.location.href = `singlePost.html?id=${item.id}`;
+                    });
+                    container.appendChild(mediaElement);
+                });
+            }
+
+            document.addEventListener("DOMContentLoaded", fetchMediaData);
+        </script>
+    </body>
+</html>
