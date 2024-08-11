@@ -3,6 +3,7 @@ from typing import List, Optional
 
 class Media(BaseModel):
     id: Optional[str] = None
+    post_id:Optional[str]=None
     description: Optional[str] = None
     media: Optional[List[str]] = None
     video_url: Optional[str] = None
