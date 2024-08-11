@@ -4,8 +4,10 @@ from models.scraperequest import ScrapeRequest
 from crud.media import post_media,get_media,get_single_media
 from models.media import Media
 from  helper.instagramdata import scraper
+from helper.scrapepost import scrape_post
 
 router = APIRouter()
+
 
 @router.post("/scrape/")
 async def scrape(request: ScrapeRequest):
@@ -35,6 +37,15 @@ async def get_media_data(profile_name):
              mediaCollection.append(media)
         return mediaCollection
     raise HTTPException(404, f"There is no medias")
+    
+    
+@router.get("/media/post/{post_id}")
+async def get_media_post(post_id):
+    response = scrape_post(post_id)
+    if response:
+        return response
+    raise HTTPException(404, f"There is no media")
+
     
     
 @router.get("/media/{id}",response_model=Media)

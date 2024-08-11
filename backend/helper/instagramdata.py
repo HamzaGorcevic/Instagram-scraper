@@ -3,6 +3,10 @@ import httpx
 from urllib.parse import quote
 from helper.parsepost import parse_post
 from models.media import Media
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 def scrape_user_posts(profile_name: str, session: httpx.Client, page_size=1, max_pages: int = None):
     
     result = session.get(
@@ -42,7 +46,7 @@ def scrape_user_posts(profile_name: str, session: httpx.Client, page_size=1, max
 def scraper(profile_id,pages):
      with httpx.Client(  headers={
         # this is internal ID of an instegram backend app. It doesn't change often.
-        "x-ig-app-id": "936619743392459",
+        "x-ig-app-id": os.environ.get("INSTAGRAM_APP_ID") ,
         # use browser-like features
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36",
         "Accept-Language": "en-US,en;q=0.9,ru;q=0.8",
